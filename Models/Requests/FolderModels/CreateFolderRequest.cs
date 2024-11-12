@@ -10,6 +10,6 @@ namespace TreeService.Models.Requests.FolderModels
         [MaxLength(100)]
         public string Name { get; set; }
 
-        public Guid? ParentFolderId { get; set; }
+        public Guid? ParentId { get; set; }
     }
 }

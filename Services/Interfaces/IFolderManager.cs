@@ -1,6 +1,5 @@
 ﻿using TreeService.Models.Entities;
 using TreeService.Models.Requests.FolderModels;
-using TreeService.Models.Responses.FolderModels;
 
 namespace TreeService.Services.Interfaces
 {

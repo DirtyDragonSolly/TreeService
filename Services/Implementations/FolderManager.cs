@@ -1,9 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Migrations.Operations;
 using TreeService.Data;
 using TreeService.Models.Entities;
 using TreeService.Models.Requests.FolderModels;
-using TreeService.Models.Responses.FolderModels;
 using TreeService.Services.Interfaces;
 
 namespace TreeService.Services.Implementations
@@ -24,21 +22,24 @@ namespace TreeService.Services.Implementations
 
         public async Task<Folder> GetAsync(Guid id)
         {
-            return await _context.Folders
-                .Include(e => e.Children)
-                .FirstAsync(e => e.Id == id);
+            var folder = await _context.Folders.FirstAsync(f => f.Id == id);
+
+            return folder;
         }
 
         public async Task<Guid> CreateAsync(CreateFolderRequest folderRequest)
         {
+            //Creating folder and save it in DB
             var id = Guid.NewGuid();
             _context.Folders.Add(new Folder
             {
                 Id = id,
                 Name = folderRequest.Name,
-                ParentFolderId = folderRequest.ParentFolderId,
+                ParentId = folderRequest.ParentId
             });
             await _context.SaveChangesAsync();
+
+            //Code 200 with parent
             return id;
         }
 
@@ -50,6 +51,13 @@ namespace TreeService.Services.Implementations
         public async Task DeleteAsync(DeleteFolderRequest folderRequest)
         {
             throw new NotImplementedException();
+        }
+
+        private async Task<Folder> MapCategory(Folder folder)
+        {
+            folder.Children = await Task.WhenAll(folder.Children.Select(fc => MapCategory(fc)));
+
+            return folder;
         }
     }
 }

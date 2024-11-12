@@ -1,6 +1,4 @@
-﻿using CSharpFunctionalExtensions;
-
-namespace TreeService.Models.Entities
+﻿namespace TreeService.Models.Entities
 {
     public class Folder
     {
@@ -10,7 +8,9 @@ namespace TreeService.Models.Entities
 
         public bool IsActive { get; set; } = true;
 
-        public Guid? ParentFolderId { get; set; }
+        public Guid? ParentId { get; set; }
+
+        public Folder? Parent { get; set; }
 
         public IEnumerable<Folder>? Children { get; set; }
     }

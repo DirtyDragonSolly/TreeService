@@ -11,13 +11,18 @@ namespace TreeService.Data
 
         public DbSet<Folder> Folders { get; set; }
 
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder.UseLazyLoadingProxies();
+        }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Folder>().ToTable("Folders");
             modelBuilder.Entity<Folder>()
-                .HasMany(f => f.Children)
-                .WithMany()
-                .HasForeignKey(f => f.ParentFolderId);
+                .HasOne(c => c.Parent)
+                .WithMany(c => c.Children)
+                .HasForeignKey(c => c.ParentId);
         }
     }
 }
