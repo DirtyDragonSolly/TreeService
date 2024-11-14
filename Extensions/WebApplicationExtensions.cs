@@ -14,7 +14,7 @@ namespace TreeService.Extensions
                 webApplication.UseSwagger();
                 webApplication.UseSwaggerUI(c =>
                 {
-                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Client Service API");
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Folder Service API");
                     c.RoutePrefix = string.Empty;
                     c.DocExpansion(DocExpansion.None);
                     c.DisplayRequestDuration();

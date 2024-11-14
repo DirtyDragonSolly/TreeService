@@ -1,10 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace TreeService.Models.Requests.FolderModels
+﻿namespace TreeService.Models.Requests.FolderModels
 {
     public class DeleteFolderRequest
     {
-        [Required]
-        Guid Id { get; set; }
+        public Guid Id { get; set; }
     }
 }

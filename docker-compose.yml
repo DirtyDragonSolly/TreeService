@@ -6,11 +6,20 @@ services:
     environment:                                                                                                                                                                                                                                                            
       POSTGRES_USER: postgres                                                                                                                                                                                                                                                 
       POSTGRES_PASSWORD: postgres                                                                                                                                                                                                                                         
-      POSTGRES_DB: clientsdb                                                                                                                                                                                                                                               
+      POSTGRES_DB: foldersdb                                                                                                                                                                                                                                               
     ports:                                                                                                                                                                                                                                                                  
       - 127.0.0.1:5432:5432                                                                                                                                                                                                                                             
     volumes:                                                                                                                                                                                                                                                                
       - pgdata:/var/lib/postgresql/data                                                                                                                                                                                                                              
-    restart: always 
+    restart: always                                                                                                                                                                                                                                                          
+  tree_service:                                                                                                                                                                                                                                                                
+    container_name: tree_service                                                                                                                                                                                                                                               
+    build:                                                                                                                                                                                                                                                                  
+      dockerfile: ./Dockerfile                                                                                                                                                                                                                       
+    ports:                                                                                                                                                                                                                                                                  
+      - 127.0.0.1:8080:8080  
+    restart: unless-stopped
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
 volumes:
   pgdata:

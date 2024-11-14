@@ -18,21 +18,57 @@ namespace TreeService.Controllers
         }
 
         [HttpGet]
-        [ProducesResponseType(typeof(GetFolderResponse), 200)]
-        public async Task<IActionResult> Get([FromQuery] Guid id)
+        [ProducesResponseType(typeof(List<GetFolderResponse>), 200)]
+        public async Task<IActionResult> GetAll()
         {
-            var client = await _folderManager.GetAsync(id);
+            var folders = await _folderManager.GetAllAsync();
 
-            return Ok(client);
+            return Ok(folders);
+        }
+
+        [HttpGet("{id}")]
+        [ProducesResponseType(typeof(GetFolderResponse), 200)]
+        public async Task<IActionResult> Get([FromRoute] Guid id)
+        {
+            var folder = await _folderManager.GetAsync(id);
+
+            return Ok(folder);
+        }
+
+        [HttpGet("[action]")]
+        [ProducesResponseType(typeof(GetFolderTreeResponse), 200)]
+        public async Task<IActionResult> Tree([FromQuery] Guid id)
+        {
+            var folderTree = await _folderManager.GetTreeAsync(id);
+
+            return Ok(folderTree);
         }
 
         [HttpPost]
-        [ProducesResponseType(typeof(int), 200)]
+        [ProducesResponseType(typeof(Guid), 200)]
         public async Task<IActionResult> Create([FromBody, Required] CreateFolderRequest request)
         {
-            var clientId = await _folderManager.CreateAsync(request);
+            var folderId = await _folderManager.CreateAsync(request);
 
-            return Ok(clientId);
+            return Ok(folderId);
+        }
+
+        [HttpPut]
+        [ProducesResponseType(200)]
+        public async Task<IActionResult> Update([FromBody, Required] UpdateFolderRequest request)
+        {
+            await _folderManager.UpdateAsync(request);
+
+            return Ok();
+        }
+
+        [HttpDelete]
+        [ProducesResponseType(200)]
+        public async Task<IActionResult> Delete([FromBody, Required] DeleteFolderRequest request)
+        {
+            await _folderManager.DeleteAsync(request);
+
+            return Ok();
         }
     }
 }

@@ -4,9 +4,12 @@ namespace TreeService.Models.Requests.FolderModels
 {
     public class UpdateFolderRequest
     {
-        [Required]
+        public Guid Id { get; set; }
+
         [MinLength(1)]
         [MaxLength(100)]
-        public string Name { get; set; }
+        public required string Name { get; set; }
+
+        public Guid? ParentId { get; set; }
     }
 }

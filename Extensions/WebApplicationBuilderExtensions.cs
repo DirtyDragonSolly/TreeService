@@ -1,6 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using Serilog;
 using TreeService.Data;
+using TreeService.MappingProfiles;
+using TreeService.Repositories.Implementations;
+using TreeService.Repositories.Interfaces;
 using TreeService.Services.Implementations;
 using TreeService.Services.Interfaces;
 
@@ -10,21 +15,30 @@ namespace TreeService.Extensions
     {
         public static WebApplicationBuilder ConfigureDIContainer(this WebApplicationBuilder applicationBuilder)
         {
-            //applicationBuilder.Logging.ClearProviders();
-            //applicationBuilder.Host.UseSerilog((context, configuration) => configuration.ReadFrom.Configuration(context.Configuration));
+            applicationBuilder.Logging.ClearProviders();
+            applicationBuilder.Host.UseSerilog((context, configuration) => configuration.ReadFrom.Configuration(context.Configuration));
 
             applicationBuilder.Services.AddControllers();
 
             applicationBuilder.AddSwaggerConfiguration();
             applicationBuilder.AddDbContext();
             applicationBuilder.AddLogic();
-
+            applicationBuilder.AddRepositories();
+            applicationBuilder.AddMapping();
+            
             return applicationBuilder;
         }
 
         private static WebApplicationBuilder AddLogic(this WebApplicationBuilder applicationBuilder)
         {
             applicationBuilder.Services.AddScoped<IFolderManager, FolderManager>();
+
+            return applicationBuilder;
+        }
+
+        private static WebApplicationBuilder AddRepositories(this WebApplicationBuilder applicationBuilder)
+        {
+            applicationBuilder.Services.AddScoped<IFolderRepository, FolderRepository>();
 
             return applicationBuilder;
         }
@@ -45,9 +59,25 @@ namespace TreeService.Extensions
                 options.SwaggerDoc("v1", new OpenApiInfo
                 {
                     Version = "v1",
-                    Title = "Client.Service.Api"
+                    Title = "Folder.Service.Api"
                 });
             });
+
+            return applicationBuilder;
+        }
+
+        private static WebApplicationBuilder AddMapping(this WebApplicationBuilder applicationBuilder)
+        {
+            var mappingConfig = new MapperConfiguration(mc =>
+            {
+                mc.AllowNullCollections = true;
+
+                mc.AddProfile(new MappingProfile());
+            });
+
+            IMapper mapper = mappingConfig.CreateMapper();
+
+            applicationBuilder.Services.AddSingleton(mapper);
 
             return applicationBuilder;
         }

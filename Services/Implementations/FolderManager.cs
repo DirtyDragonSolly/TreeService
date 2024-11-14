@@ -1,63 +1,89 @@
-﻿using Microsoft.EntityFrameworkCore;
-using TreeService.Data;
+﻿using AutoMapper;
+using TreeService.Helpers;
 using TreeService.Models.Entities;
 using TreeService.Models.Requests.FolderModels;
+using TreeService.Models.Responses.FolderModels;
+using TreeService.Repositories.Interfaces;
 using TreeService.Services.Interfaces;
 
 namespace TreeService.Services.Implementations
 {
     public class FolderManager : IFolderManager
     {
-        private readonly FoldersContext _context;
+        private readonly IMapper _mapper;
+        private readonly IFolderRepository _folderRepository;
 
-        public FolderManager(FoldersContext context)
+        public FolderManager(
+            IMapper mapper,
+            IFolderRepository folderRepository)
         {
-            _context = context;
+            _mapper = mapper;
+            _folderRepository = folderRepository;
         }
 
-        public async Task<List<Folder>> GetAllFoldersAsync()
+        public async Task<List<GetFolderResponse>> GetAllAsync()
         {
-            return await _context.Folders.ToListAsync();
+            var folders = await _folderRepository.GetAllActiveAsync();
+
+            var result = folders
+                .Select(_mapper.Map<GetFolderResponse>)
+                .ToList();
+
+            return result;
         }
 
-        public async Task<Folder> GetAsync(Guid id)
+        public async Task<GetFolderResponse?> GetAsync(Guid id)
         {
-            var folder = await _context.Folders.FirstAsync(f => f.Id == id);
+            var folder = await _folderRepository.GetAsync(id);
 
-            return folder;
+            var result = _mapper.Map<GetFolderResponse>(folder);
+
+            return result;
+        }
+
+        public async Task<GetFolderTreeResponse?> GetTreeAsync(Guid folderId)
+        {
+            var folders = await _folderRepository.GetTreeAsync(folderId);
+
+            return FolderHelper.BuildFolderTree(folders, folderId);
         }
 
         public async Task<Guid> CreateAsync(CreateFolderRequest folderRequest)
         {
-            //Creating folder and save it in DB
             var id = Guid.NewGuid();
-            _context.Folders.Add(new Folder
+
+            var folderEntity = new Folder
             {
                 Id = id,
                 Name = folderRequest.Name,
                 ParentId = folderRequest.ParentId
-            });
-            await _context.SaveChangesAsync();
+            };
 
-            //Code 200 with parent
-            return id;
+            var result = await _folderRepository.CreateAsync(folderEntity);
+
+            return result;
         }
 
         public async Task UpdateAsync(UpdateFolderRequest folderRequest)
         {
-            throw new NotImplementedException();
+            var folder = await _folderRepository.GetAsync(folderRequest.Id);
+            if (folder == null)
+            {
+                throw new Exception("folder not found");
+            }
+
+            if (folder.Name == folderRequest.Name 
+                && folder.ParentId == folderRequest.ParentId)
+            {
+                return;
+            }
+
+            await _folderRepository.UpdateAsync(folder);
         }
 
         public async Task DeleteAsync(DeleteFolderRequest folderRequest)
         {
-            throw new NotImplementedException();
-        }
-
-        private async Task<Folder> MapCategory(Folder folder)
-        {
-            folder.Children = await Task.WhenAll(folder.Children.Select(fc => MapCategory(fc)));
-
-            return folder;
+            await _folderRepository.DeleteAsync(folderRequest.Id);
         }
     }
 }
