@@ -15,9 +15,18 @@ services:
   tree_service:                                                                                                                                                                                                                                                                
     container_name: tree_service                                                                                                                                                                                                                                               
     build:                                                                                                                                                                                                                                                                  
-      dockerfile: ./Dockerfile                                                                                                                                                                                                                       
+      dockerfile: ./src/TreeService/Dockerfile                                                                                                                                                                                                                       
     ports:                                                                                                                                                                                                                                                                  
       - 127.0.0.1:8080:8080  
+    restart: unless-stopped
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development                                                                                                                                                                                                                                                          
+  tree_service_client:                                                                                                                                                                                                                                                                
+    container_name: tree_service_client                                                                                                                                                                                                                                             
+    build:                                                                                                                                                                                                                                                                  
+      dockerfile: ./src/TreeServiceClient/Dockerfile                                                                                                                                                                                                                       
+    ports:                                                                                                                                                                                                                                                                  
+      - 127.0.0.1:5280:8080  
     restart: unless-stopped
     environment:
       ASPNETCORE_ENVIRONMENT: Development

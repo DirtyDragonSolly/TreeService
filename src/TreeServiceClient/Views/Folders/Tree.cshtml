@@ -1,0 +1,40 @@
+﻿@using TreeServiceClient.Models.Responses.FolderModels
+@model GetFolderTreeResponse
+
+<h2>Дерево</h2>
+<p>Для раскрытия папки нужно на неё нажать</p>
+
+<div>
+    @Html.Partial("_FolderTreePartial", Model)
+</div>
+
+<a asp-action="Index" class="btn btn-secondary mt-3">На главную</a>
+
+<!-- Добавляем стили для скрытия узлов дерева -->
+<style>
+    .folder-children {
+        display: none;
+        margin-left: 20px;
+    }
+    .folder-item {
+        cursor: pointer;
+        font-weight: bold;
+    }
+</style>
+
+<!-- Добавляем скрипт для управления разворачиванием и сворачиванием -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const folderItems = document.querySelectorAll(".folder-item");
+
+        folderItems.forEach(item => {
+            item.addEventListener("click", function () {
+                const childrenContainer = this.nextElementSibling;
+                if (childrenContainer) {
+                    const isVisible = childrenContainer.style.display === "block";
+                    childrenContainer.style.display = isVisible ? "none" : "block";
+                }
+            });
+        });
+    });
+</script>
