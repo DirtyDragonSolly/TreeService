@@ -78,6 +78,9 @@ namespace TreeService.Services.Implementations
                 return;
             }
 
+            folder.Name = folderRequest.Name;
+            folder.ParentId = folderRequest.ParentId;
+
             await _folderRepository.UpdateAsync(folder);
         }
 
