@@ -1,0 +1,20 @@
+﻿@using TreeServiceClient.Models.Responses.FolderModels
+@model GetFolderTreeResponse
+
+<div>
+    <!-- Узел папки -->
+    <div class="folder-item">
+        <span>&#128449;</span> @Model.Name (Id: @Model.Id)
+    </div>
+
+    <!-- Дочерние элементы, скрытые по умолчанию -->
+    @if (Model.Children != null && Model.Children.Any())
+    {
+        <div class="folder-children">
+            @foreach (var child in Model.Children)
+            {
+                @Html.Partial("_FolderTreePartial", child)
+            }
+        </div>
+    }
+</div>

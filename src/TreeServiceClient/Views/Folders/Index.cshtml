@@ -1,0 +1,31 @@
+﻿@using TreeServiceClient.Models.Responses.FolderModels
+@model List<GetFolderResponse>
+
+<h2>Папки</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Название</th>
+            <th>Id родительской папки</th>
+            <th>Действия</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var folder in Model)
+        {
+            <tr>
+                <td>@folder.Name</td>
+                <td>@folder.ParentId</td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@folder.Id">Посмотреть</a> |
+                    <a asp-action="Edit" asp-route-id="@folder.Id">Изменить</a> |
+                    <a asp-action="Delete" asp-route-id="@folder.Id">Удалить</a> |
+                    <a asp-action="Tree" asp-route-id="@folder.Id">Построить дерево</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a asp-action="Create" class="btn btn-secondary mt-3">Создать новую папку</a>
